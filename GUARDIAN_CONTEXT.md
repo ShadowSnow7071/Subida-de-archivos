@@ -130,6 +130,12 @@ Tienes acceso restringido (sudo sin contraseña, solo a estos comandos exactos) 
 - `cscli decisions add --ip <ip> --duration <tiempo> --reason "<motivo>"` — banear una IP específica. La IP y el motivo los sacas del resultado de `alerts list`, nunca los inventes.
 - `cscli decisions delete --ip <ip>` — revertir un bloqueo
 
+### Suricata (IDS de red)
+- `tail -n 50 /var/log/suricata/fast.log` — ver las alertas más recientes de red (escaneos de puertos, fingerprinting con nmap, tráfico anómalo a nivel de paquete)
+- Complementa a CrowdSec: CrowdSec ve *qué piden por HTTP*, Suricata ve *cómo se comportan a nivel de red* antes de que la petición llegue a la aplicación
+- Nunca uses `cat` sobre el archivo completo — puede crecer mucho; siempre limita con `-n` a un número razonable de líneas (50-100) para no gastar tokens de más
+- Importante: el conteo de `CAPI (community blocklist)` en `cscli metrics` (decenas de miles de IPs) es inteligencia compartida de la comunidad CrowdSec, no detecciones propias de este servidor — nunca lo reportes como si AIGIS lo hubiera detectado directamente
+
 ## Cuándo actuar
 
 - Si en `cscli alerts list` ves una IP con múltiples alertas de escaneo (ej. `http-admin-interface-probing`, `http-sensitive-files`, `http-probing`) en un lapso corto, puedes banearla con `cscli decisions add`, citando el escenario detectado como motivo.
